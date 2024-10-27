@@ -1,0 +1,35 @@
+server.port: 0
+
+microstar.dataStores:
+  resources:
+    type: filesystem
+    root: jars/data/static-data/, ./data/static-data/
+
+app:
+  config:
+    statics:
+      # fallback: http://localhost:5173    # When none of the targets match, this fallback will be chosen
+      targets:
+        # - from: name        # Prefix that should match with the requested path
+        #   to: url or path   # Target to use. If path, the target will be skipped if the requested resource doesn't exist
+        - from: /foobar
+          to: https://www.whatismybrowser.com/detect/what-http-headers-is-my-browser-sending
+
+      # Location in the filesystem (relative to /data/static-data/) to look for requested resources.
+      # Default configuration is for the directory structure created by default by this service.
+      # Two 'users' exist by default: 'unknown' and 'default'. Possible users are:
+      #
+      # - unknown   This is the user when not logged in (no (valid) token) (UserToken calls this GUEST)
+      # - default   End up here if no other user matches
+      # - group     List of users as configured under user-groups
+      # - user      Name of individual user
+      #
+      userTargets:
+        unknown: [ /public/ ]
+        default: [ /frontend/ ]
+
+      # group-name to set of users to be used in userTargets
+      userGroups:
+        beta-testers: [ userBT1, userBT2, userBT3 ]
+        devs:         [ userD1, userD2, userD3 ]
+        ux:           [ userU1, userU2 ]

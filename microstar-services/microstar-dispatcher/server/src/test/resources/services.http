@@ -1,0 +1,19 @@
+### services
+GET localhost:8080/services
+Accept: application/json
+
+### /reflector
+POST localhost:8080/reflector/some/more/path?a=b&c=d
+Accept: text/plain
+
+### /main/reflector
+POST localhost:8080/main/reflector/some/more/path?a=b&c=d
+
+### /other/reflector
+POST localhost:8080/other/reflector/some/more/path?a=b&c=d
+
+### error
+POST localhost:8080/reflector/error
+
+### restart reflector
+POST localhost:8080/reflector/restart

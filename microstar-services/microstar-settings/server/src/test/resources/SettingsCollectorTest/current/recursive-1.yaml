@@ -1,0 +1,3 @@
+number: 91
+spring.config.import: recursive-2.yaml
+recursive-1: true

@@ -1,0 +1,29 @@
+server:
+  port: 0
+servers:
+  - server-a
+  - server-b
+  - server-c
+log:
+  a.pak.name: INFO
+  b.pak.name: ERROR
+foo:
+  a: [1,2,3]
+  b: [4,5,6]
+  d: [10, {"d1":1,"d2":2}]
+  e: {"f":0,"h":[1,2,3],"i":7}
+---
+profile: dev
+server:
+  port: 123
+log:
+  c.pak.name: TRACE
+  d.pak.name: DEBUG
+servers:
+ - dev.bar.com
+ - foo.bar.com
+foo:
+  b: [44,55,66]
+  c: [7,8,9]
+  d: [100, {"d2":22,"d3":33"}]
+  e: {"f":1,"g":2,"h":[4,5,6]}

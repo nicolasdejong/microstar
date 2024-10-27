@@ -1,0 +1,12 @@
+server:
+  port: 0
+
+# Settings data store. Default is filesystem. Can be overridden to e.g. database.
+microstar.dataStores:
+  settings:
+    type: filesystem
+    root: ./data/settings/
+
+app.config:
+  settings:
+    syncBetweenStars: true   # set to false when using a centralized data store for settings

@@ -1,0 +1,79 @@
+logging.level:
+  net.microstar.dispatcher.services.ServiceJarsManager: INFO
+  reactor.netty.channel.FluxReceive: ERROR              # due to many warnings about websockets
+  reactor.netty.http.client.HttpClientConnect: ERROR    # due to many warnings about websockets
+  reactor.netty: ERROR
+
+# Any Microstar service can configure this. See net.microstar.spring.DataStores
+microstar.dataStores:
+  jars:
+    type: filesystem
+    root: jars,.
+  data:
+    type: filesystem
+    root: jars/data,data
+  log:
+    type: filesystem
+    root: jars/log,log
+  memory:  # this has little use apart from testing
+    type: memory  # data will be lost when the service stops
+# dbstore:
+#   type: database
+#   url: postgresql://some.db.server/dbname[?user=other&password=secret]
+#   [user: other
+#   password: secret]
+
+
+
+app:
+  config:
+    dispatcher:
+      url: http://localhost:8080     # only set method, host and port here -- should be set for all services on the command line
+
+      allowGuests: true              # guests are users that are not logged in
+      allowGuestServices:            # when guests are not allowed except for some service
+        - microstar-dispatcher
+        - microstar-authentication
+        - microstar-statics
+        - sso
+      #denyGuestServices:            # when guests are allowed except for some services
+
+      services:
+        startupTimeout: 20s          # max time that requests will be paused while a service is starting (leading to gateway timeout otherwise)
+        aliveCheckInterval: 10s      # unregister a service if no life-sign in this time.
+        idleStopTime: 48h            # not yet implemented: stop a service when no traffic for this time
+        idleRemoveTime: 30d          # not yet implemented: remove a service when no traffic for this time
+        startWhenCalled: true        # requesting data from a non-running service will start the service when true
+
+      mappings:
+        oauth2: /sso/oauth2/         # these three are needed for oauth2 sso service
+        login:  /sso/login/
+        logout: /sso/logout/
+
+      fallback: /microstar-statics/  # called when a non-existing target is called
+
+      bootstrap:                     # bootstrap mode runs when no authentication is running so the dashboard can be used
+        adminEnabled: true
+        adminPassword: admin
+        disableAdminWhenServices:    # bootstrap mode ends if any of these services have registered
+          - microstar-authorization
+          - sso
+
+      # actions to perform on a response. Triggers top to bottom. Currently, the only action is a redirect
+      #responseActions:
+      #  - service: my-service              # service whose responses to check (empty or "*" for all)
+      #    status: 404                      # status code to trigger on
+      #    redirect: /redirect-location/    # absolute or relative url to redirect to
+
+      stars:                         # each dispatcher + services is called a star. There can be multiple star instances.
+        aliveCheckInterval: 10s
+        syncJars:                    # set to [] to prevent any syncing between stars
+          - ADDED                    # jars that are added on any star will be distributed to the local star
+          - DELETED                  # jars that are deleted on any star will be deleted from the local star as well
+          - RUNNING                  # jars that are running on any star will be copied to the local star
+          #- ALL                      # all jars on all stars will be copied to the local star
+#        instances:                   # when there are multiple stars, add them here (including self)
+#          - url: http://localhost:8080
+#            name: L1
+#          - url: http://localhost:9090
+#            name: L2

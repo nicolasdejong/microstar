@@ -1,0 +1,152 @@
+# Reference documentation for all *global* yaml configuration in MicroStar.
+#
+# Configuration is mapped onto various classes and this file was added to combine all
+# the information to gain an overview. *Not* included here is configuration that is
+# specific for a service, like Dispatcher or Settings (typically starting with app.config).
+# Look in the default application.yml files of those services for more info there.
+#
+# Various times are parsed by the DurationString class from common. That way strings
+# like '10m', '2h30m5s' or '100ms' are supported. These values are mapped to Duration
+# instances in the property class containing the configuration
+#
+# Various sizes are parsed by the ByteSize class from common. That way strings like
+# '10MB', '3MB2KB1B' or '128GB' are supported. These values are mapped to ByteSize
+# instances in the property class containing the configuration.
+#
+# Note that any configuration can also be provided on the command-line when starting
+# the service as -Dkey=value tuples.
+
+###
+
+# When the Dispatcher starts a service, it uses the 'vmArgs' from the settings of that
+# service as extra arguments for starting the VM. This way, for example, memory limits
+# can be provided.
+vmArgs: -Xmx500m
+
+# Every service, except the Dispatcher, needs to set the port to 0, meaning "pick any".
+# As all services receive their requests via the Dispatcher, their port number can be
+# anything. Also, this way it is possible to start multiple instances of this service
+# without port conflicts.
+server:
+  port: 0
+
+
+# While this is Dispatcher specific, *each* service needs this to connect and subscribe
+# itself to the Dispatcher.
+app.config.dispatcher:
+  url: https://url.to.dispatcher:8080
+
+
+# Not MicroStar specific, but different compared with Spring as in Spring the logging
+# levels can only be provided in bootstrap configuration. In Microstar the log levels
+# can be provided in the normal configuration and can also be altered (via the settings
+# service) at runtime.
+logging.level:
+  net.microstar.dispatcher.services.ServiceJarsManager: INFO
+  reactor.netty.channel.FluxReceive: ERROR
+  reactor.netty: ERROR
+
+
+# DataStores are an abstraction against a filesystem, database or anything that can
+# contain data. There are a few default implementations. The DataStores class manages
+# creating and updating these stores. Adding configuration is all that is needed to
+# include them. Code can then ask the DataStore instance by name from DataStores.
+# DataStores can also be found in the Dispatcher dashboard.
+microstar.dataStores:
+  nameOfStore:  # reference name to the store. There can be many stores.
+    type: filesystem   # default supported types: memory, filesystem, database
+
+    # other configuration depends on the store type.
+
+    # memory (typically for testing only)
+    readDelay: 10ms   # Optional: Time to pause before reading. Defaults to 0
+    writeDelay: 1s    # Optional: Time to pause before writing. Defaults to 0
+
+    # filesystem
+    root: /one/or,/more/roots  # Optional: Location on filesystem that is the root for
+                               # this data store. Defaults to current directory if not
+                               # provided. Uses first one that exists.
+
+    # database
+    url: jdbc:h2:mem:test;DATABASE_TO_UPPER=false  # Mandatory: Jdbc connection string
+    table: files                # Optional: (schema.)table to use. Defaults to 'files'.
+    user: username              # Optional: username if not in url
+    password: secret            # Optional: password if not in url (can be encrypted using {cipher})
+    poolSize: 10                # Optional: database connection pool size. Defaults to 10.
+    pollingTime: 30s            # Optional: time between polling for changes. Defaults to 10s.
+
+    # Also caching is supported for each datastore, independent of type.
+    # This can improve performance for handling fast requests.
+    # The caching is optional and is only added when a 'cache' key exists
+    # in the store configuration. Cache can be in memory, on disk or both.
+    # When both are used, most recent use is in memory and memory overflows
+    # into the disk cache.
+    cache:                    # leave out if no cache is required
+      maxMemSize:    10MB     # optional maximum byte size of all data cached in memory
+      maxMemCount:   1000     # optional maximum number of files cached in memory
+      maxFilesSize:  100MB    # optional maximum byte size of all data cached to disk
+      maxFilesCount: 1000     # optional maximum number of files cached to disk
+                # while all above max* keys are optional, at least one must be provided
+      maxAge:        10h      # optional shelf life, e.g. 1h20m or 1d12h
+      maxUnreadAge:  5h       # optional shelf life that eventually resets when not read
+      maxMemItemSize: 200KB   # optional maximum size of item in memory (default is 256KB) (ignored when no file cache)
+      maxMemItemFraction: 0.5 # optional maximum fraction of memory size an item can be (ignored when no file cache)
+
+
+# A small list of mappings of file-extension to content type (mime-type) is kept in
+# net.microstar.spring.ContentTypes. Configuration can extend or overwrite these mappings.
+# Code can call ContentTypes.typeOfExt(extension).
+contentTypes:
+  jpg:  image/jpeg
+  yaml: application/yaml
+
+
+# Encryption is used to secure communications between MicroStar services and is used
+# in configuration values when the {cypher} prefix is used.
+#
+# When any service is started, several of these keys are provided on the command line,
+# for example: java -Dencryption.encPassword=secret -Dencryption.settings.hashSalt=hsalt
+#
+# The 'clusterSecret' password must always be provided on the command line. Services that don't
+# know this secret will not be allowed to subscribe to the Dispatcher.
+encryption:
+  encPassword: secret  # password used for encryption, like configuration values starting with {cipher}
+  settings:
+    # NOTE: Changing any of these settings will make it impossible to decrypt data
+    #       that was encrypted with previous settings.
+    encAlgorithm:   PBKDF2WithHmacSHA1
+    encKeyType:     AES
+    encCipherType:  AES/CBC/PKCS5Padding
+    encIterations:  10_000
+    encKeyLength:   256
+    hashAlgorithm:  SHA-512
+    hashIterations: 30_0000
+    hashKeyLength:  128
+    encSalt:        MicroStarEncSalt
+    hashSalt:       MicroStarHashSalt
+
+
+# Some configuration to limit output of status exceptions
+microstar.exceptions:
+  errorStatusNotToLog: [ 401, 403, 404 ]
+  errorStatusNotToLogStackTrace: [ 404 ]
+  errorStatusToSendLogStackTrace: [ 500 ]
+  errorStatusTruncateStackTrace: true
+
+
+# Logging configuration. MicroStar has its own LogAppender that takes care of output and logging.
+logging.microstar:
+  enabled: true
+  pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%5p) --- %cyan(%-40.40logger{39}): %m%wEx"
+  patternAlsoForConsole: false; # overrides Spring pattern if set
+  sanitizePattern: "(?i)(?:secret|password)\\s*[=:]\\s*(\\S+)"
+  sanitizedReplacement: "<SANITIZED>"
+  location: ./log
+  singleMaxSize: 10MB
+  sleepBetweenWrites: 1s
+  sleepBetweenMaintenance: 30s
+  history:
+    enabled: true
+    maxSize: 100MB
+    maxAge:  30d
+}

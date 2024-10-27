@@ -1,0 +1,31 @@
+Microstar Watchdog V${version:?}
+
+Starts a Dispatcher when it is not running, which is the case when the server
+port is available. The Dispatcher is started by running the following command:
+
+java <given-vars> <given-jparams> -jar <found-dispatcher-jar> <given-params>
+
+For example:
+
+java -jar microstar-watchdog.jar jarsDir:jars/ interval:5min port:2233 var:some.path=someVal
+
+Dispatcher found for current parameters:
+
+ ${jar}
+
+Possible Watchdog parameters:
+
+- jarsDir[s]:path(s) Path(s) to the directory containing one or more Dispatchers (default: .)
+                     Finds the Dispatcher jar with the highest version
+                     Multiple paths separated by semicolon or comma can be given
+- interval:time      Time between checking if server port is available (now: ${interval})
+- port:number        Port (default: 8080 or from given app.config.dispatcher.url) (now: ${port})
+- var:key=value      Will lead to '-Dvar=val' in java call (multiple allowed)
+- param:text         Will lead to 'text' as jar parameter (multiple allowed)
+- jparam:text        Will lead to 'text' as java parameter (multiple allowed)
+- @filename          Read parameters from given file as if given on command line
+- encrypt:text       Encrypts text which can be used as value to prevent plain-text secrets
+                     Prints result and exits immediately
+- server:port        To run a mini server that returns 200 on / and /health
+- help               To show this text and exit
+

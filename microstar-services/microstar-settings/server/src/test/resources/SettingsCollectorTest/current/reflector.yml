@@ -1,0 +1,32 @@
+reflector: true
+parent: false
+spring:
+  config:
+    import: parent
+---
+number: 2
+name: reflector
+profiles: none
+---
+spring.config.activate.on-profile: a
+spring.config.import: foo
+name: reflector:a
+anum: 1
+profiles: a
+---
+spring.config.activate.on-profile: a,b
+name: reflector:ab
+number: 3
+abnum: 1
+profiles: a,b
+---
+number: 4
+name: reflector:bc
+profiles: b,c
+bcnum: 1
+spring:
+  config:
+    activate:
+      on-profile:
+        - b
+        - c

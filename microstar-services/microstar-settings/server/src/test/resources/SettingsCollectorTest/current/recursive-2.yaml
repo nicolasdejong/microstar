@@ -1,0 +1,3 @@
+number: 92
+spring.config.import: recursive-3
+recursive-2: true

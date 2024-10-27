@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.microstar</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.6</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <!-- javac specific arguments are configured in the maven plugin below -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <spring.boot.version>3.3.4</spring.boot.version>
+        <spring.version>6.1.14</spring.version>
+        <jackson.version>2.18.0</jackson.version>
+        <snake.yaml.version>2.3</snake.yaml.version>
+        <guava.version>33.3.1-jre</guava.version>
+        <lombok.version>1.18.34</lombok.version>
+        <oshi.version>6.6.5</oshi.version>
+    </properties>
+
+    <modules>
+        <module>microstar-common</module>
+        <module>microstar-services</module>
+        <module>microstar-spring</module>
+        <module>microstar-testing</module>
+        <module>microstar-tools</module>
+    </modules>
+
+    <!-- these dependencies will be added to *all* modules, so scope should be provided or test -->
+    <dependencies>
+        <dependency>
+            <!-- to prevent repetitive code -->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <!-- for the @TypeQualifierDefault & @Nullable annotations that IntelliJ supports -->
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--suppress VulnerableLibrariesLocal --><!-- these are only testing libs, not included in product -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-junit-jupiter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.14.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.14.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- needed for mockito to run on jdk 21 -->
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-subclass</artifactId>
+            <version>5.14.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- reactor (mono/flux) test support -->
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <version>3.6.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- for testing http calls -->
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>5.0.0-alpha.14</version> <!-- prefer not to use alpha but junit5 mock (below) needs it -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- for testing http calls to temp server -->
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver3-junit5</artifactId>
+            <version>5.0.0-alpha.14</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- for doing performance tests -->
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>1.37</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- for doing performance tests -->
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>1.37</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- for the @SkipWhenNoSlowTests and @FlakyTest annotations -->
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-testing</artifactId>
+            <version>1.5</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- reactive rest server, yaml support, DI, Spring basics -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-webflux</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <!-- for mapping yaml from/to maps  -->
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snake.yaml.version}</version>
+            </dependency>
+            <dependency>
+                <!-- mainly for collection immutables (which are supported by Lombok) -->
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <!-- for registerModule(new Jdk8Module()) - only needed when no Spring dependency -->
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jdk8</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <!-- add support to jackson for the Guava collection types (like ImmutableList) -->
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-guava</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <!-- to prevent repetitive code -->
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <!-- to get process memory usage -->
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <!-- this goal will be set when mvn is called without arguments/goals -->
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+            <!-- flatten POMs and fill in variables like ${revision}. Maven will deploy the flattened POM. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                </configuration>
+                <executions>
+                    <!-- enable flattening -->
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <!-- ensure proper cleanup -->
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Needed for the deploy retry logic -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <retryFailedDeploymentCount>3</retryFailedDeploymentCount>
+                </configuration>
+            </plugin>
+
+            <!-- Add extra Maven and javac options -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                    <encoding>UTF-8</encoding>
+                    <fork>true</fork>
+                    <failOnWarning>true</failOnWarning> <!-- same as -Werror compiler arg -->
+                    <compilerArgs>
+                        <!-- linting is good, but Javac is complaining too much so switch off some of them:
+                             -serial      We don't do Java serialization so don't need serialVersionUID
+                             -processing  Leads to 'No processor claimed any of these annotations'
+                             -unchecked   Even with SuppressWarning this leads to a warning which fails the build.
+                                          Warning shows in IntelliJ if not suppressed, so it is not completely gone.
+                                          Some 'unchecked' warnings can not be fixed so need to be suppressed.
+                             - options    For warning: "system modules path not set in conjunction with -source 21"
+                        -->
+                        <arg>-Xlint:all,-serial,-processing,-unchecked,-options</arg>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- needed for surefire argLine -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.7.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- surefire runs the unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                        <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine> <!-- needed for mockito -->
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- failsafe-plugin runs integration tests (ending in IT.java) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+                    <useModulePath>false</useModulePath>
+                    <additionalClasspathElements>
+                        <!-- this configuration is needed when spring-boot-starter is not parent -->
+                        <additionalClasspathElement>${project.build.outputDirectory}</additionalClasspathElement>
+                    </additionalClasspathElements>
+                </configuration>
+            </plugin>
+
+            <!-- exclude release candidates and alpha versions from maven -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <!--suppress MavenModelInspection -->
+                    <rulesUri>file://${maven.multiModuleProjectDirectory}/mvn-version-rules.xml</rulesUri>
+                </configuration>
+            </plugin>
+
+            <!-- copy created jar to /jars in project root -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-jars</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${maven.multiModuleProjectDirectory}/jars/</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/target/</directory>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>microstar-spring-*</exclude>
+                                        <exclude>microstar-service-*</exclude>
+                                        <exclude>*common*</exclude>
+                                        <exclude>*-client*</exclude>
+                                        <exclude>*-model*</exclude>
+                                        <exclude>**tester*</exclude>
+                                        <exclude>original-*</exclude>
+                                        <exclude>*-sources.jar</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

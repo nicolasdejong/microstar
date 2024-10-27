@@ -1,0 +1,32 @@
+server:
+  port: 0
+
+app.config.dispatcher:
+  url: http://localhost:8080
+
+authentication:
+
+  # Time until the received user token expires. The token contains just user id (if SSO) and name
+  # but no other information like roles, so the only reason to keep this value low is to periodically
+  # check if the user is still allowed in.
+  tokenTimeout: 7d
+
+  # The default 'getToken' endpoint returns 401 but redirects to SSO server if this is present
+  # (SSO stands for Single Sign On which is used to log in using a 3rd party system)
+  # The sso service should return a token that is compatible with the UserToken used here.
+  # ssoUrl: /sso/token
+
+  # Map of username to hash of password. Allows all if empty.
+  # Use dashboard 'Encryption' tab to generate hash.
+  # userPasswords:
+  #  admin: userPasswordHash
+  #  user1: userPasswordHash
+  #  user2: userPasswordHash
+
+  # Don't set the following here, but globally in the services.yml! <-----------------------------------
+  # Map of user to roles. All users will be ADMIN if empty.
+  # Key is username or email of user, casing ignored.
+  # Value is list or comma separated string of roles (so a,b,c and "a,b,c" and ["a","b","c"] are equal)
+  # Users that don't have a role here will get the role GUEST.
+  #userRoles:
+  #  admin: ADMIN

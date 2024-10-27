@@ -1,0 +1,22 @@
+server:
+  port: 0
+
+app:
+  config:
+    dispatcher:
+      url: http://localhost:8080
+
+experiment:
+  foo: "{cipher}0sEjlGvFG+eAECF+1fzR4g=="
+  bar: 123
+  zoo: 200
+  list: ["a", "b", "c", "d"]
+  deeper:
+    list:
+      - { "a": 1, "b": 2 }
+      - { "a": 11, "b": 22 }
+
+needing-restart:
+  foo: 1
+  bar: 2
+  zoo: 3

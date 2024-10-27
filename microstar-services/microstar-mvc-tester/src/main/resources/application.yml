@@ -1,0 +1,7 @@
+server.port: 0
+
+logging.level:
+  org.springframework:
+    web.SimpLogging: ERROR
+    web.socket.config.WebSocketMessageBrokerStats: ERROR  # default INFO is chatty
+    messaging.simp.broker: ERROR # default INFO is chatty

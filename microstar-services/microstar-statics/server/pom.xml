@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.microstar</groupId>
+        <artifactId>microstar-statics-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>microstar-statics</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-spring-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-statics-model</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>2.11.5</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- this plugin creates the runnable jar including dependencies -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

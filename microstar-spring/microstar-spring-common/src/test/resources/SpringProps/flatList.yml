@@ -1,0 +1,43 @@
+deepList[0].a: 1
+deepList[0].b: 2
+deepList[1].a: 11
+deepList[1].b: 22
+deepList[2].a: 111
+deepList[2].b.foo: 222
+deepList[2].b.bar: 333
+deepList[2].c[0]: 3
+deepList[2].c[1]: 4
+deepList[2].c[2]: 5
+deepList[2].d[0].dd: 2
+deepList[2].d[0].ddd: 3
+deepList[2].d[1].ee: 3
+deepList[2].d[1].eee: 4
+dispatcher.url: http://localhost:8080
+dot.test:
+  nodot: 1
+  with.dot: 2
+experiment.bar: 222
+experiment.deeper.list[0].a: 1
+experiment.deeper.list[0].b: 2
+experiment.deeper.list[1].a: 11
+experiment.deeper.list[1].b: 22
+experiment.list[0]: a
+experiment.list[1]: b
+experiment.list[2]: c
+experiment.list[3]: d
+experiment.zoo: 200
+file.encoding: UTF-8
+file.separator: /
+java.awt.headless: true
+java.class.version: 61.0
+java.runtime.name: OpenJDK Runtime Environment
+java.runtime.version: 17.0.1+12-39
+java.specification.name: Java Platform API Specification
+java.specification.vendor: Oracle Corporation
+java.specification.version: 17
+log.a.pak.name: INFO
+log.b.pak.name: ERROR
+server.port: 0
+servers[0]: server-a
+servers[1]: server-b
+servers[2]: server-c

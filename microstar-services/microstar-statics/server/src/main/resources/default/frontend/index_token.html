@@ -1,0 +1,19 @@
+<html lang="en">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Login met token</title>
+    <script>
+        delete localStorage.testUserInfo;
+        delete localStorage.loginToken;
+        document.cookie = "X-AUTH-TOKEN=;expires=Thu, 01 Jan 1970 00:00:01 GMT"; // clears cookie
+        location.reload();
+    </script>
+</head>
+
+<body style="display:none">
+</body>
+
+</html>

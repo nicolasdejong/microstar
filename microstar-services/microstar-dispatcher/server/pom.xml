@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.microstar</groupId>
+        <artifactId>microstar-dispatcher-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>microstar-dispatcher</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-spring-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-spring-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-dispatcher-model</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.microstar</groupId>
+            <artifactId>microstar-common</artifactId>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <!-- On mac with dropbox, recreate /target after clean and set dropbox to ignore the dir -->
+        <profile>
+            <id>mac</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>Recreate target</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>
+                                        mkdir
+                                    </executable>
+                                    <commandlineArgs>
+                                        target
+                                    </commandlineArgs>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>Set dropbox ignore on target</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>
+                                        xattr
+                                    </executable>
+                                    <commandlineArgs>
+                                        -w com.dropbox.ignored 1 target
+                                    </commandlineArgs>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>Set dropbox ignore on dashboard/node</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>
+                                        xattr
+                                    </executable>
+                                    <commandlineArgs>
+                                        -w com.dropbox.ignored 1 src/main/frontend/dashboard/node
+                                    </commandlineArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <!-- this plugin creates the runnable jar including dependencies -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- clean should also remove frontend 'dist/' folder -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/frontend/dashboard/dist</directory>
+                            <includes>
+                                <include>**/</include>
+                            </includes>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <!-- build frontend -->
+            <!--plugin>
+                <- this plugin is disabled here because it won't work in enterprise environment ->
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.12.1</version>
+
+                <configuration>
+                    <workingDirectory>src/main/frontend/dashboard</workingDirectory>
+                </configuration>
+
+                <executions>
+
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <- See https://nodejs.org/en/download/ for latest node and npm (lts) versions ->
+                            <nodeVersion>v18.6.0</nodeVersion>
+                            <npmVersion>8.13.2</npmVersion>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <- Optional configuration which provides for running any npm command ->
+                        <configuration>
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>npm run build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin-->
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                            <workingDirectory>src/main/frontend/dashboard</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm run build</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                            </arguments>
+                            <workingDirectory>src/main/frontend/dashboard</workingDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- copy dashboard frontend resources into /target/classes/public/dashboard -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes/public/dashboard/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/frontend/dashboard/dist/</directory>
+                                    <includes>
+                                        <include>**/*.*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

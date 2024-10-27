@@ -1,0 +1,7 @@
+app:
+  config:
+    statics:
+      fallback: http://localhost:5173 # Fallback instead of target until moving to Vite-4: https://github.com/sveltejs/kit/issues/2958
+      targets:
+        - from: /dashboard
+          to: http://localhost:5173

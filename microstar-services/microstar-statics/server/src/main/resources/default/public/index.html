@@ -1,0 +1,60 @@
+<!-- script to automatically log in -->
+<!-- this assumes that microstar-statics serves a different index.html when logged in -->
+<html lang="en">
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <script>
+        handleParams();
+        login();
+
+        function handleParams() {
+            location.search.substring(1).split(/&/).map(t=>t.split(/=/,2)).forEach(([key, value]) => {
+                if(key === 'X-AUTH-TOKEN') setCookie(key, value);
+            });
+        }
+        function login() {
+            fetchWhoAmI().catch(_ => ssoLogin());
+        }
+
+        function fetchWhoAmI() {
+            return window.fetch('/whoami') // should become /who-am-i when all servers have been updated
+                .then(response => {
+                    if(response.status !== 200) {
+                        throw new Error('no whoami endpoint');
+                    }
+                    return response.json().then(userInfo => {
+                        if (!userInfo.token || userInfo.name === 'Guest') {
+                            clearCookie('X-AUTH-TOKEN');
+                            console.log('Not logged in -- call SSO for login');
+                            throw new Error('whoami failed');
+                        }
+                        console.log('Logged in -- reloading for main site');
+                        location.reload();
+                    });
+                });
+        }
+        function ssoLogin() {
+            clearCookie('X-AUTH-TOKEN');
+            return logout() // clears JSESSIONID httpOnly cookie
+                .then(_ => location.href = '/sso?X-SSO-TARGET=' + encodeURIComponent(location.href));
+        }
+        function setCookie(name, value) { document.cookie = name + '=' + value + ';expires=Wed, 01 Jan 2070 00:00:01 GMT'; }
+        function clearCookie(name)      { document.cookie = name + '=' +         ';expires=Thu, 01 Jan 1970 00:00:01 GMT'; }
+        function logout() {
+            return fetch('/sso/logout').then(resp => resp.text()).then(html => {
+                const csrf = html.replace(/^[\s\S]*type="hidden" value="([^"]+)"[\s\S]*$/, '$1');
+                // The next line will fail (due to redirect leading to CORS)
+                // but the JSESSIONID cookie (httpOnly) will have been reset
+                return fetch('/sso/logout?_csrf=' + csrf, { method: 'post' }).catch(_ => null);
+            });
+        }
+    </script>
+    <title>login</title>
+</head>
+
+<body></body>
+
+</html>

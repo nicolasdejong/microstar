@@ -1,0 +1,21 @@
+server:
+  port: 123
+
+servers:
+  - dev.bar.com
+  - foo.bar.com
+
+log:
+  a.pak.name: INFO
+  b.pak.name: ERROR
+  c.pak.name: TRACE
+  d.pak.name: DEBUG
+
+foo:
+  a: [1,2,3]
+  b: [44,55,66]
+  d: [100, {"d2":22,"d3":33"}]
+  e: {"f":1,"h":[4,5,6],"i":7,"g":2}
+  c: [7,8,9]
+
+profile: dev

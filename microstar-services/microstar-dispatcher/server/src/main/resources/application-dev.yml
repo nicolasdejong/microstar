@@ -1,0 +1,18 @@
+logging.level:
+  net.microstar.dispatcher.filter.RequestLogger: INFO  # set to DEBUG to log requests
+
+app:
+  config:
+    dispatcher:
+#      mappings:
+#        dashboard: /microstar-statics/dashboard/
+#      fallback: /microstar-statics/
+      stars:
+        aliveCheckInterval: 11s
+        syncAddedJars: true
+        syncRemovedJars: true
+        instances:               # when there are multiple stars, add them here (including self)
+          - url: http://localhost:8080
+            name: L1
+          - url: http://localhost:8081
+            name: L2

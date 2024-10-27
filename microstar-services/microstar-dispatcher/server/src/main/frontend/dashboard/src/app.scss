@@ -1,0 +1,196 @@
+@import "assets/prism/prism-theme-dynamic.css";
+
+* {
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color:         #242424;
+    --background-color-hover:   rgb(127, 127, 127);
+    --background-color-label:   rgb(80, 80, 80);
+    --background-color-faded:   rgb(52, 52, 52);
+    --background-color-hoverbg: #30544e;
+    --text-color:               rgba(255, 255, 255, 0.87);
+    --text-color-unselected:    rgba(255, 255, 255, 0.5);
+    --text-color-hover:         rgba(102, 102, 102, 1);
+    --text-color-label:         rgba(200, 200, 200, 1);
+    --text-color-faded:         rgba(255, 255, 255, 0.3);
+    --text-color-reversed:      rgba(0, 0, 0, 0.87);
+    --border-color:             #dee2e6;
+    --border-color-hover:       #555;
+    --log-level-info-color:     #00B000FF;
+    --log-level-error-color:    #FF4040FF;
+    --log-level-warn-color:     orange;
+    --log-level-debug-color:    #C1AC3B;
+    --log-level-trace-color:    yellow;
+    --log-class-color:          cyan;
+    --log-number-color:         #74c0da;
+  }
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color:         white;
+    --background-color-hover:   rgb(127, 127, 127);
+    --background-color-label:   rgb(50, 50, 50);
+    --background-color-faded:   rgba(233,233,233);
+    --background-color-hoverbg: #c2f0f7;
+    --text-color:               rgba(0, 0, 0, 0.87);
+    --text-color-unselected:    rgba(0, 0, 0, 0.5);
+    --text-color-hover:         rgba(0, 0, 0, 0.4);
+    --text-color-label:         rgba(127, 127, 127, 1);
+    --text-color-faded:         rgba(16, 16, 16, 0.3);
+    --text-color-reversed:      rgba(255, 255, 255, 0.87);
+    --border-color:             #b1b1b1;
+    --border-color-hover:       #e3e3e3;
+    --log-level-info-color:     #00B000FF;
+    --log-level-error-color:    #FF4040FF;
+    --log-level-warn-color:     orange;
+    --log-level-debug-color:    #A39317;
+    --log-level-trace-color:    #797900;
+    --log-class-color:          darkcyan;
+    --log-number-color:         #0d0dff;
+  }
+}
+
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.card {
+  padding: 2em;
+}
+button {
+  position: relative;
+  border: 1px solid var(--border-color);
+  &.noborder { border-color: transparent; }
+  border-radius: 2px;
+  background-color: var(--background-color-faded);
+  padding: 0.2em 0.1em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: .2s ease-in-out 0s;
+  &:hover {
+    z-index: 999;
+    &:not([disabled]) { border: 1px solid var(--text-color); transform: scale(1.25); }
+    &:disabled        { border: 1px solid transparent;       cursor: default; }
+  }
+  //&:focus { outline: 0; }
+  &:hover:after {
+    content: "";
+    display: block;
+    position: absolute;
+    border-radius: 1em;
+    left: 0;
+    top:0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: all 0.5s;
+    box-shadow: 0 0 0.75em 1.5em var(--text-color);
+  }
+  &:hover:active { content:''; background-color: var(--background-color-hover); }
+  &:hover:active:after {
+    box-shadow: 0 0 0 0 var(--text-color);
+    position: absolute;
+    border-radius: 0;
+    left: 0;
+    top:0;
+    opacity: 1;
+    transition: 0s;
+  }
+}
+
+
+.expand-button {
+  position: absolute;
+  display: block;
+  left: 0.2em;
+  margin-top: 0.4em;
+  width: .75em;
+  height: .7em;
+  font-size: 100%;
+  line-height: 0.7em;
+  overflow: hidden;
+  margin-right: -0.7em;
+  border: 1px solid var(--border-color);
+  &:not(.expanded):before { content: '+'; }
+  &.expanded {
+    line-height: 0.5em;
+    &:after { content: '-'; }
+  }
+  cursor: pointer;
+}
+.expandable {
+  display: none;
+  &.expanded { display: initial; }
+}
+
+/* Because the log panel is not managed by Svelte, CSS should be global. Also used by several panels. */
+.logPanel span.Level.INFO  { color: var(--log-level-info-color); }
+.logPanel span.Level.ERROR { color: var(--log-level-error-color); font-weight: bold; }
+.logPanel span.Level.WARN  { color: var(--log-level-warn-color); }
+.logPanel span.Level.DEBUG { color: var(--log-level-debug-color); }
+.logPanel span.Level.TRACE { color: var(--log-level-trace-color); }
+.logPanel span.Class       { color: var(--log-class-color); }
+.logPanel span.Number      { color: var(--log-number-color); }
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

@@ -1,0 +1,14 @@
+spring.profiles: a
+name: a
+---
+spring:
+  profiles: b
+name: b
+---
+spring:
+  profiles: c,d
+name: cd
+---
+spring:
+  profiles: a,d
+name: ad

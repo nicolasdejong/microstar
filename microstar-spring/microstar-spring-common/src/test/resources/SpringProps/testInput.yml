@@ -1,0 +1,37 @@
+server:
+  port: 0
+servers:
+  - server-a
+  - server-b
+  - server-c
+log:
+  a:
+   pak:
+     name: INFO
+  b.pak.name: ERROR
+deepList:
+  - a: 1
+    b: 2
+  - a: 11
+    b: 22
+  - a: 111
+    b: {"foo":222,"bar":333}
+    c: [3, 4, 5]
+    d: [{"dd":2,"ddd":3},{"ee":3,"eee":4}]
+---
+profile: dev
+server:
+  port: 123
+
+log:
+  c.pak.name: TRACE
+  d.pak.name: DEBUG
+servers:
+ - dev.bar.com
+ - foo.bar.com
+---
+profile: prod
+server:
+  port: 345
+---
+justSomeString

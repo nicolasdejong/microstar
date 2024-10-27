@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>net.microstar</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.6</version>
+    </parent>
+
+    <artifactId>microstar-services</artifactId>
+    <version>1.6</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.build.timestamp.format>yyyyMMdd.HHmmss</maven.build.timestamp.format>
+    </properties>
+
+    <modules>
+        <module>microstar-authorization</module>
+        <module>microstar-dispatcher</module>
+        <module>microstar-settings</module>
+        <module>microstar-statics</module>
+        <module>microstar-webflux-tester</module>
+        <module>microstar-mvc-tester</module>
+    </modules>
+
+    <build>
+        <finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>
+
+        <pluginManagement>
+            <plugins>
+                <!-- this plugin creates the jar including dependencies -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>3.3.5</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <!-- this plugin ignores scope, so scope 'provided' is still included, requiring manual exclusions below  -->
+                    <configuration>
+                        <excludeGroupIds>org.projectlombok,com.google.findbugs</excludeGroupIds>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
